@@ -10,7 +10,6 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
-import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.ui.CustomPanelAPI;
 import com.fs.starfarer.api.ui.PositionAPI;
 import com.fs.starfarer.api.ui.UIComponentAPI;
@@ -23,13 +22,13 @@ import wfg.native_ui.ui.Attachments;
 import wfg.native_ui.ui.MethodFields;
 import wfg.native_ui.ui.core.UIContainerAPI;
 
-public final class UiHierarchyTree implements EveryFrameScript {
+final class UIHierarchyTree {
     private final DefaultMutableTreeNode root = new DefaultMutableTreeNode("Root");
     private final DefaultTreeModel treeModel = new DefaultTreeModel(root);
     private final JTree tree = new JTree(treeModel);
     private final JFrame frame = new JFrame("UI Hierarchy");
 
-    public UiHierarchyTree() {
+    UIHierarchyTree() {
         frame.add(new JScrollPane(tree));
         frame.setSize(400, 400);
         frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -41,24 +40,14 @@ public final class UiHierarchyTree implements EveryFrameScript {
         frame.add(refreshButton, BorderLayout.NORTH);
     }
 
-    public void advance(float amount) {}
-
-    public boolean isDone() {
-        return false;
-    }
-
-    public boolean runWhilePaused() {
-        return true;
-    }
-
     private void updateTree() {
         root.removeAllChildren();
 
-        final UIPanelAPI masterTab = Attachments.getScreenPanel();
-        if (masterTab == null) return;
-        final List<UIComponentAPI> listChildren = MethodFields.getChildrenNonCopy(masterTab);
+        final UIPanelAPI screen = Attachments.getScreenPanel();
+        if (screen == null) return;
+        final List<UIComponentAPI> listChildren = MethodFields.getChildrenNonCopy(screen);
 
-        root.setUserObject("[ROOT] - " + masterTab.getClass().getName());
+        root.setUserObject("[ROOT] - " + screen.getClass().getName());
 
         for (Object child : listChildren) {
             if (child instanceof UIPanelAPI panel) {
