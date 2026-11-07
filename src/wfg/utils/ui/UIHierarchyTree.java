@@ -22,13 +22,13 @@ import wfg.native_ui.ui.Attachments;
 import wfg.native_ui.ui.MethodFields;
 import wfg.native_ui.ui.core.UIContainerAPI;
 
-final class UIHierarchyTree {
+public final class UIHierarchyTree {
     private final DefaultMutableTreeNode root = new DefaultMutableTreeNode("Root");
     private final DefaultTreeModel treeModel = new DefaultTreeModel(root);
     private final JTree tree = new JTree(treeModel);
     private final JFrame frame = new JFrame("UI Hierarchy");
 
-    UIHierarchyTree() {
+    public UIHierarchyTree() {
         frame.add(new JScrollPane(tree));
         frame.setSize(400, 400);
         frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
