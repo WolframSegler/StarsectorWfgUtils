@@ -10,12 +10,11 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignUIAPI;
 import com.fs.starfarer.api.campaign.CoreUITabId;
 import com.fs.starfarer.api.ui.ButtonAPI;
-import com.fs.starfarer.api.ui.CustomPanelAPI;
 import com.fs.starfarer.api.ui.Fonts;
 import com.fs.starfarer.api.ui.UIComponentAPI;
 import com.fs.starfarer.api.ui.UIPanelAPI;
+import com.fs.starfarer.ui.UIComponentAPIWrapper;
 
-import wfg.native_ui.internal.ui.core.UICustomWrapper;
 import wfg.native_ui.internal.ui.core.UIVanillaWrapper;
 import wfg.native_ui.ui.Attachments;
 import wfg.native_ui.ui.MethodFields;
@@ -78,7 +77,7 @@ public abstract class AbstractTabButtonInjector implements CoreTabUIBuilder, Cal
         targetTab = Attachments.getCurrentTab();
         if (targetTab == null || campaignUI.getCurrentCoreTab() != getTargetCoreTabId()) return;
 
-        targetChildren = MethodFields.getChildrenNonCopy(targetTab);
+        targetChildren = targetTab.getChildrenCopy2();
 
         if (!uiInjected) {
             createButtonAndComponent();
@@ -165,8 +164,8 @@ public abstract class AbstractTabButtonInjector implements CoreTabUIBuilder, Cal
     }
 
     public static final UIComponentAPI unwrapOrSelf(UIComponentAPI comp) {
-        if (comp instanceof CustomPanelAPI cp && cp.getPlugin() instanceof UICustomWrapper cw) {
-            return cw.wrapped();
+        if (comp instanceof UIComponentAPIWrapper) {
+            return MethodFields.unwrapOrSelf(comp);
         }
         if (comp instanceof UIVanillaWrapper vw) {
             return vw.wrapped();

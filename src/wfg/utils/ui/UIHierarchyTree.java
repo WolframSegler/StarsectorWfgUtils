@@ -1,5 +1,7 @@
 package wfg.utils.ui;
 
+import static wfg.native_ui.util.Globals.settings;
+
 import java.awt.BorderLayout;
 import java.util.List;
 
@@ -10,15 +12,13 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
-import com.fs.starfarer.api.ui.CustomPanelAPI;
 import com.fs.starfarer.api.ui.PositionAPI;
 import com.fs.starfarer.api.ui.UIComponentAPI;
 import com.fs.starfarer.api.ui.UIPanelAPI;
+import com.fs.starfarer.ui.UIComponentAPIWrapper;
 
 import rolflectionlib.ui.UiUtil;
-import wfg.native_ui.internal.ui.core.UICustomWrapper;
 import wfg.native_ui.internal.ui.core.UIVanillaWrapper;
-import wfg.native_ui.ui.Attachments;
 import wfg.native_ui.ui.MethodFields;
 import wfg.native_ui.ui.core.UIContainerAPI;
 
@@ -43,9 +43,9 @@ public final class UIHierarchyTree {
     private void updateTree() {
         root.removeAllChildren();
 
-        final UIPanelAPI screen = Attachments.getScreenPanel();
+        final UIPanelAPI screen = settings.getScreenPanel();
         if (screen == null) return;
-        final List<UIComponentAPI> listChildren = MethodFields.getChildrenNonCopy(screen);
+        final List<UIComponentAPI> listChildren = screen.getChildrenCopy2();
 
         root.setUserObject("[ROOT] - " + screen.getClass().getName());
 
@@ -66,8 +66,8 @@ public final class UIHierarchyTree {
     private final DefaultMutableTreeNode traverseUI(UIComponentAPI comp, PositionAPI expectedPosParent) {
         final DefaultMutableTreeNode node = new DefaultMutableTreeNode(describe(comp, expectedPosParent));
 
-        if (comp instanceof CustomPanelAPI customPanel && customPanel.getPlugin() instanceof UICustomWrapper wrapper) {
-            node.add(traverseUI(wrapper.wrapped(), expectedPosParent));
+        if (comp instanceof UIComponentAPIWrapper) {
+            node.add(traverseUI(MethodFields.unwrapOrSelf(comp), expectedPosParent));
             return node;
         }
 
@@ -86,7 +86,7 @@ public final class UIHierarchyTree {
 
         if (comp instanceof UIPanelAPI panel && UiUtil.uiComponentClass.isInstance(comp)) {
             final PositionAPI panelPos = panel.getPosition();
-            for (UIComponentAPI child : MethodFields.getChildrenNonCopy(panel)) {
+            for (UIComponentAPI child : panel.getChildrenCopy2()) {
                 node.add(traverseUI(child, panelPos));
             }
             return node;
@@ -99,7 +99,7 @@ public final class UIHierarchyTree {
         final PositionAPI pos = comp.getPosition();
 
         String prefix = "";
-        if (comp instanceof CustomPanelAPI cp && cp.getPlugin() instanceof UICustomWrapper) {
+        if (comp instanceof UIComponentAPIWrapper) {
             prefix = "[W_c] ";
         } else if (comp instanceof UIVanillaWrapper) {
             prefix = "[W_v] ";
@@ -109,7 +109,7 @@ public final class UIHierarchyTree {
         if (expectedPosParent == null) {
             parentCheck = "";
         } else {
-            final PositionAPI actual = MethodFields.getPosParent(pos);
+            final PositionAPI actual = pos.getParent();
             if (actual == expectedPosParent) {
                 parentCheck = "";
             } else if (actual == null) {
