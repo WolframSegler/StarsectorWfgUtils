@@ -19,7 +19,6 @@ import com.fs.starfarer.ui.UIComponentAPIWrapper;
 
 import rolflectionlib.ui.UiUtil;
 import wfg.native_ui.internal.ui.core.UIVanillaWrapper;
-import wfg.native_ui.ui.MethodFields;
 import wfg.native_ui.ui.core.UIContainerAPI;
 
 public final class UIHierarchyTree {
@@ -66,8 +65,8 @@ public final class UIHierarchyTree {
     private final DefaultMutableTreeNode traverseUI(UIComponentAPI comp, PositionAPI expectedPosParent) {
         final DefaultMutableTreeNode node = new DefaultMutableTreeNode(describe(comp, expectedPosParent));
 
-        if (comp instanceof UIComponentAPIWrapper) {
-            node.add(traverseUI(MethodFields.unwrapOrSelf(comp), expectedPosParent));
+        if (comp instanceof UIComponentAPIWrapper wrapper) {
+            node.add(traverseUI(wrapper.getWrapped(), expectedPosParent));
             return node;
         }
 

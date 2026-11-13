@@ -17,7 +17,6 @@ import com.fs.starfarer.ui.UIComponentAPIWrapper;
 
 import wfg.native_ui.internal.ui.core.UIVanillaWrapper;
 import wfg.native_ui.ui.Attachments;
-import wfg.native_ui.ui.MethodFields;
 import wfg.native_ui.ui.core.UIElementAPI;
 import wfg.native_ui.ui.widget.Button;
 import wfg.native_ui.ui.widget.Button.CutStyle;
@@ -164,8 +163,8 @@ public abstract class AbstractTabButtonInjector implements CoreTabUIBuilder, Cal
     }
 
     public static final UIComponentAPI unwrapOrSelf(UIComponentAPI comp) {
-        if (comp instanceof UIComponentAPIWrapper) {
-            return MethodFields.unwrapOrSelf(comp);
+        if (comp instanceof UIComponentAPIWrapper wrapper) {
+            return wrapper.getWrapped();
         }
         if (comp instanceof UIVanillaWrapper vw) {
             return vw.wrapped();
